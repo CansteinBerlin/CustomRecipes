@@ -1,0 +1,6 @@
+name: CustomRecipes
+version: '${project.version}'
+main: de.canstein_berlin.customrecipes.CustomRecipes
+api-version: 1.19
+authors: [ Hasenzahn1 ]
+description: Loads custom minecraft recips. Alows the usage of custom nbt tags within the recipes
