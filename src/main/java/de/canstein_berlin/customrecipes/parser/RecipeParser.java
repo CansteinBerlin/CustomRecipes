@@ -2,6 +2,8 @@ package de.canstein_berlin.customrecipes.parser;
 
 import de.canstein_berlin.customrecipes.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.exceptions.MalformedRecipeFileException;
+import de.tr7zw.nbtapi.NBTContainer;
+import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -45,7 +47,15 @@ public abstract class RecipeParser {
         ItemStack result = new ItemStack(Material.valueOf(jsonObject.getString("item").replace("minecraft:", "").toUpperCase(Locale.ROOT)));
 
         if(jsonObject.has("count")) result.setAmount(jsonObject.getInt("count"));
-        //TODO: add support for nbt
+
+        //NBT Support
+        if(jsonObject.has("nbt")){
+            NBTContainer nbtContainer = new NBTContainer(jsonObject.getJSONObject("nbt").toString());
+            NBTItem nbtItem = new NBTItem(result);
+            nbtItem.mergeCompound(nbtContainer);
+            result = nbtItem.getItem();
+            Bukkit.getPlayer("Hasenzahn1").getInventory().addItem(result);
+        }
 
         return result;
     }
@@ -69,7 +79,15 @@ public abstract class RecipeParser {
         ItemStack stack = new ItemStack(m);
         if(jsonObject.has("count")) stack.setAmount(jsonObject.getInt("count"));
 
-        //TODO add support for nbt
+        //NBT Support
+        if(jsonObject.has("nbt")){
+            NBTContainer nbtContainer = new NBTContainer(jsonObject.getJSONObject("nbt").toString());
+            NBTItem nbtItem = new NBTItem(stack);
+            nbtItem.mergeCompound(nbtContainer);
+            stack = nbtItem.getItem();
+            Bukkit.getPlayer("Hasenzahn1").getInventory().addItem(stack);
+        }
+
         return new RecipeChoice.ExactChoice(stack);
     }
 

@@ -8,7 +8,7 @@
    - [X] Blasting
    - [X] Stonecutting
    - [X] Smithing
- - [ ] Recipes contain nbt
+ - [X] Recipes contain nbt
  - [ ] Check Modules:
    - [ ] Craftable only with specific permission
    - [ ] Definable in the recipe file
