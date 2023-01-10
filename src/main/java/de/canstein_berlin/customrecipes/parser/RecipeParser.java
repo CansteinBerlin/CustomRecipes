@@ -132,4 +132,8 @@ public abstract class RecipeParser {
         else if(o instanceof JSONArray) return getMultipleRecipeChoice(((JSONArray) o));
         throw new InvalidRecipeValueException("Malformed Ingredient list");
     }
+
+    public JSONObject getRecipeJson() {
+        return recipeJson;
+    }
 }
