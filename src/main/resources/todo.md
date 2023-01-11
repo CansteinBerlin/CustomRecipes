@@ -9,9 +9,9 @@
    - [X] Stonecutting
    - [X] Smithing
  - [X] Recipes contain nbt
- - [ ] Check Modules:
-   - [ ] Craftable only with specific permission
-   - [ ] Definable in the recipe file
+ - [X] Check Modules:
+   - [X] Craftable only with specific permission
+   - [X] Definable in the recipe file
  - [ ] Gui to display all registered recipes.
  - [ ] Unregister recipes at runtime
  - [ ] API for other plugins
