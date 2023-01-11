@@ -54,7 +54,6 @@ public abstract class RecipeParser {
             NBTItem nbtItem = new NBTItem(result);
             nbtItem.mergeCompound(nbtContainer);
             result = nbtItem.getItem();
-            Bukkit.getPlayer("Hasenzahn1").getInventory().addItem(result);
         }
 
         return result;
@@ -85,7 +84,6 @@ public abstract class RecipeParser {
             NBTItem nbtItem = new NBTItem(stack);
             nbtItem.mergeCompound(nbtContainer);
             stack = nbtItem.getItem();
-            Bukkit.getPlayer("Hasenzahn1").getInventory().addItem(stack);
         }
 
         return new RecipeChoice.ExactChoice(stack);
