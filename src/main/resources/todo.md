@@ -13,7 +13,7 @@
    - [X] Craftable only with specific permission
    - [X] Definable in the recipe file
  - [ ] Gui to display all registered recipes.
- - [ ] Unregister recipes at runtime
+ - [ ] Enable Disable recipes at runtime
  - [ ] API for other plugins
    - [ ] Save Default Recipes
    - [ ] Load Reciped
