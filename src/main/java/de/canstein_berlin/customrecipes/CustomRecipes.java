@@ -1,14 +1,15 @@
 package de.canstein_berlin.customrecipes;
 
-import de.canstein_berlin.customrecipes.debug.ClassDebug;
 import de.canstein_berlin.customrecipes.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.listener.CraftListener;
 import de.canstein_berlin.customrecipes.parser.RecipeParser;
 import de.canstein_berlin.customrecipes.parser.RecipeParserFactory;
-import de.canstein_berlin.customrecipes.parser.RequirementParserFactory;
+import de.canstein_berlin.customrecipes.parser.RequirementParser;
 import de.canstein_berlin.customrecipes.requirements.BaseRequirement;
+import de.canstein_berlin.customrecipes.util.RecipeUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,11 +21,12 @@ public final class CustomRecipes extends JavaPlugin {
 
     private static CustomRecipes instance;
 
-    private HashMap<Recipe, ArrayList<BaseRequirement>> recipeRequirements;
+    private HashMap<NamespacedKey, ArrayList<BaseRequirement>> recipeRequirements;
 
     @Override
     public void onEnable() {
         instance = this;
+        recipeRequirements = new HashMap<>();
 
         Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
 
@@ -36,12 +38,7 @@ public final class CustomRecipes extends JavaPlugin {
             if(getResource(file) != null) saveResource(file, true);
 
             try {
-                RecipeParser parser = RecipeParserFactory.loadFromFile(this, file);
-                System.out.println("###################### " + file + " ######################");
-                Recipe recipe = parser.parseRecipe();
-                System.out.println(new ClassDebug(recipe));
-                Bukkit.removeRecipe(((ShapelessRecipe) recipe).getKey());
-                Bukkit.addRecipe(recipe);
+                registerRecipe(this, file);
 
             } catch (MalformedRecipeFileException | InvalidRecipeValueException e) {
                 e.printStackTrace();
@@ -49,14 +46,17 @@ public final class CustomRecipes extends JavaPlugin {
         }
     }
 
-    public void registerRecipe(String file) throws MalformedRecipeFileException, InvalidRecipeValueException {
-        RecipeParser parser = RecipeParserFactory.loadFromFile(this, file);
+    public void registerRecipe(JavaPlugin plugin, String file) throws MalformedRecipeFileException, InvalidRecipeValueException {
+        RecipeParser parser = RecipeParserFactory.loadFromFile(plugin, file);
         Recipe recipe = parser.parseRecipe();
-        Bukkit.removeRecipe(((ShapelessRecipe) recipe).getKey());
+        Bukkit.removeRecipe(RecipeUtil.getKeyFromRecipe(recipe));
         Bukkit.addRecipe(recipe);
 
-        ArrayList<BaseRequirement> requirements = RequirementParserFactory.parseRequirements(parser.getRecipeJson());
+        ArrayList<BaseRequirement> requirements = RequirementParser.parseRequirements(parser.getRecipeJson());
+        System.out.println(requirements);
+        if(requirements.size() == 0) return;
 
+        recipeRequirements.put(RecipeUtil.getKeyFromRecipe(recipe), requirements);
     }
 
     @Override
@@ -68,7 +68,11 @@ public final class CustomRecipes extends JavaPlugin {
         return instance;
     }
 
-    public HashMap<Recipe, ArrayList<BaseRequirement>> getRecipeRequirements() {
+    public HashMap<NamespacedKey, ArrayList<BaseRequirement>> getRecipeRequirements() {
         return recipeRequirements;
+    }
+
+    public ArrayList<BaseRequirement> getRequirements(Recipe recipe) {
+        return recipeRequirements.getOrDefault(RecipeUtil.getKeyFromRecipe(recipe), new ArrayList<>());
     }
 }
