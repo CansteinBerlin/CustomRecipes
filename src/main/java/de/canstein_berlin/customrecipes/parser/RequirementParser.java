@@ -9,27 +9,30 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class RequirementParserFactory {
+public class RequirementParser {
 
-    public static ArrayList<BaseRequirement> parseRequirements(JSONObject jsonObject) throws InvalidRecipeValueException {
-        if(!jsonObject.has("requirements")) return null;
+    public static ArrayList<BaseRequirement> parseRequirements(JSONObject jsonObject) throws InvalidRecipeValueException, MalformedRecipeFileException {
+        if(!jsonObject.has("requirements")) return new ArrayList<>();
 
         ArrayList<BaseRequirement> requirements = new ArrayList<>();
         JSONArray jsonArray = jsonObject.optJSONArray("requirements");
         if(jsonArray == null) throw new InvalidRecipeValueException("Requirements field has to be an array");
+
         for(int i = 0; i < jsonArray.length(); i++){
-            JSONObject jsonObject1 = jsonArray.optJSONObject(i);
-            if(!jsonObject.has("type")){
+            JSONObject element = jsonArray.optJSONObject(i);
+
+            if(!element.has("type")){
                 throw new InvalidRecipeValueException("Missing requirements type");
             }
-            switch (jsonObject.getString("type")){
-                case PermissionRequirement.ID:
+            switch (element.getString("type")){
+                case PermissionRequirement.ID -> requirements.add(new PermissionRequirement(element));
+                default -> throw new InvalidRecipeValueException("Unknown requirement type: " + jsonObject.getString("type"));
 
             }
         }
 
 
-        return null;
+        return requirements;
     }
 
 }
