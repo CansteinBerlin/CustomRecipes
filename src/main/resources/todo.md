@@ -1,20 +1,29 @@
 # Todo
- - [X] Supported Recipe types:
-   - [X] Shaped
-   - [X] Shapeless
-   - [X] Smelting
-   - [X] Smoking
-   - [X] Campfire Cooking
-   - [X] Blasting
-   - [X] Stonecutting
-   - [X] Smithing
- - [X] Recipes contain nbt
- - [X] Check Modules:
-   - [X] Craftable only with specific permission
-   - [X] Definable in the recipe file
+ - [ ] Supported Recipe types:
+   - [ ] Shaped
+   - [ ] Shapeless
+   - [ ] Smelting
+   - [ ] Smoking
+   - [ ] Campfire Cooking
+   - [ ] Blasting
+   - [ ] Stonecutting
+   - [ ] Smithing
+ - [ ] Recipes contain nbt
+ - [ ] Check Modules:
+   - [ ] Craftable only with specific permission
+   - [ ] Definable in the recipe file
  - [ ] Gui to display all registered recipes.
  - [ ] Enable Disable recipes at runtime
- - [ ] API for other plugins
-   - [ ] Save Default Recipes
-   - [ ] Load Reciped
-   - [ ] Disable Recipes
+
+ - [ ] API
+   - [ ] Register Recipes
+   - [ ] Unregister Recipes
+   - [ ] Requirements:
+     - [ ] Create new Requirements
+     - [ ] Alter requirements of recipes
+     - [ ] Register new Requirements, that the parser can use
+   - [ ] Recipes
+     - [ ] Load Recipes from file or from string
+     - [ ] Save Recipes to file or string, with or without requirements
+   - [ ] Util
+     - [ ] Get NamespacedKey from Recipe
