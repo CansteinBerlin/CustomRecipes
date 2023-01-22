@@ -16,13 +16,8 @@
     {
       "type": "permission",
       "permissions": [
-        "test.test",
-        "hallo.a"
+        "test.test"
       ]
-    },
-    {
-      "type": "daytime",
-      "time": 26000
     }
   ]
 }

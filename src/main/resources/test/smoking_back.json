@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smoking",
+  "cookingtime": 1,
+  "experience": 1000000000.0,
+  "ingredient": {
+    "item": "minecraft:warped_nylium"
+  },
+  "result": "minecraft:crimson_nylium"
+}

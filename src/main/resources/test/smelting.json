@@ -1,6 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "cookingtime": 200,
+  "cookingtime": 10,
   "experience": 0.35,
   "ingredient": {
     "item": "minecraft:birch_sapling"

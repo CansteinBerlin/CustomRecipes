@@ -22,10 +22,10 @@
     }
   },
   "result": {
-    "item": "minecraft:torch",
+    "item": "minecraft:sweet_berries",
     "count": 3,
     "nbt": {
-      "CustomModelData": 1
+      "CustomModelData": 2
     }
   }
 }
