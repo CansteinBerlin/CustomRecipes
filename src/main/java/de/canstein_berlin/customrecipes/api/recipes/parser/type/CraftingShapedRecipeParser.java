@@ -54,12 +54,6 @@ public class CraftingShapedRecipeParser extends BaseRecipeParser {
         if (jsonObject.has("group")) recipe.setGroup(jsonObject.getString("group"));
 
         //Create Custom Recipe
-        CustomRecipe customRecipe = new CustomRecipe(namespacedKey, recipe);
-
-        //Parse and add Requirements
-        if (jsonObject.has("requirements")) {
-            customRecipe.setRequirements(parseRequirements(jsonObject.optJSONArray("requirements")));
-        }
-        return customRecipe;
+        return new CustomRecipe(namespacedKey, recipe);
     }
 }
