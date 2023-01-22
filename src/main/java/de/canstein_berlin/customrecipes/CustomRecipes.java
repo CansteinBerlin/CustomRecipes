@@ -1,18 +1,12 @@
 package de.canstein_berlin.customrecipes;
 
 import de.canstein_berlin.customrecipes.api.CustomRecipesAPI;
-import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
-import de.canstein_berlin.customrecipes.debug.ClassDebug;
+import de.canstein_berlin.customrecipes.listeners.ItemCraftListener;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.*;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.stream.Stream;
 
 public final class CustomRecipes extends JavaPlugin {
 
@@ -31,57 +25,28 @@ public final class CustomRecipes extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        String[] files = new String[]{};
+        //Listeners
+        Bukkit.getPluginManager().registerEvents(new ItemCraftListener(), this);
 
+        //Load recipes from recipes folder
 
-        try {
-            files = getFiles().toArray(new String[]{});
-        } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
+        for (String file : getRecipesFromFolder("recipes")) {
+            CustomRecipesAPI.getInstance().createAndRegister(this, file);
         }
 
-        for (String file : files) {
-            System.out.println(file);
-            saveResource(file.substring(1), true);
-
-            CustomRecipe recipe = CustomRecipe.fromResource(this, file);
-
-            if (recipe != null) {
-                System.out.println("#####################################" + file + "############################################");
-                System.out.println(new ClassDebug(recipe.getRecipe()));
-                System.out.println("#####################################" + file + "############################################");
-
-                CustomRecipesAPI.getInstance().registerRecipes(recipe);
-            } else {
-                System.out.println("Recipe is null");
-            }
-
-        }
     }
 
-    private ArrayList<String> getFiles() throws URISyntaxException, IOException {
-        URI uri = getClassLoader().getResource("test").toURI();
-        Path myPath;
-        if (uri.getScheme().equals("jar")) {
-            FileSystem fileSystem;
-            try {
-                fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
-            } catch (FileSystemAlreadyExistsException e) {
-                fileSystem = FileSystems.getFileSystem(uri);
-            }
-            myPath = fileSystem.getPath("/test");
-        } else {
-            myPath = Paths.get(uri);
-        }
-        Stream<Path> walk = Files.walk(myPath, 1);
+    private ArrayList<String> getRecipesFromFolder(String dirName) {
+        File file = new File(getDataFolder(), dirName);
+        if (!file.exists()) file.mkdirs();
+
         ArrayList<String> list = new ArrayList<>();
-        for (Iterator<Path> it = walk.iterator(); it.hasNext(); ) {
-            String path = it.next().toString();
-            if (path.endsWith(".json")) list.add(path);
+        for (File f : file.listFiles()) {
+            if (!f.isFile()) continue;
+            if (f.getName().endsWith(".json")) list.add(dirName + "/" + f.getName());
         }
         return list;
     }
-
 
     @Override
     public void onDisable() {
