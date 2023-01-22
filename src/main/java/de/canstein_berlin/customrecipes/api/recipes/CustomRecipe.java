@@ -1,10 +1,12 @@
 package de.canstein_berlin.customrecipes.api.recipes;
 
+import de.canstein_berlin.customrecipes.api.CustomRecipesAPI;
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.parser.RecipeParserFactory;
 import de.canstein_berlin.customrecipes.api.requirements.BaseRequirement;
 import org.bukkit.NamespacedKey;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,8 +32,8 @@ public class CustomRecipe {
             return RecipeParserFactory.getInstance().loadFromFile(plugin, file);
         } catch (IOException | MalformedRecipeFileException | InvalidRecipeValueException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static CustomRecipe fromResource(JavaPlugin plugin, String path) {
@@ -39,11 +41,11 @@ public class CustomRecipe {
     }
 
     public boolean compareWithRecipe(Recipe recipe) {
-        return false;
+        return CustomRecipesAPI.getNamespacedKeyFromRecipe(recipe).equals(namespacedKey);
     }
 
     public boolean hasRequirements() {
-        return false;
+        return requirements.size() > 0;
     }
 
     public void addRequirement(BaseRequirement requirement) {
@@ -71,4 +73,11 @@ public class CustomRecipe {
         this.requirements.addAll(requirements);
     }
 
+    public boolean canCraft(CraftItemEvent event) {
+        for (BaseRequirement r : requirements) {
+            if (!r.check(event)) return false;
+        }
+        
+        return true;
+    }
 }
