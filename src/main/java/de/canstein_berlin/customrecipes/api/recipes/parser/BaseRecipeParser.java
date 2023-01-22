@@ -1,10 +1,8 @@
 package de.canstein_berlin.customrecipes.api.recipes.parser;
 
-import de.canstein_berlin.customrecipes.api.CustomRecipesAPI;
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
-import de.canstein_berlin.customrecipes.api.requirements.BaseRequirement;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
@@ -135,19 +133,4 @@ public abstract class BaseRecipeParser {
         throw new InvalidRecipeValueException("Malformed Ingredient list");
     }
 
-    public ArrayList<BaseRequirement> parseRequirements(JSONArray jsonArray) throws MalformedRecipeFileException, InvalidRecipeValueException {
-        ArrayList<BaseRequirement> requirements = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.optJSONObject(1);
-            if (jsonObject == null) throw new MalformedRecipeFileException("Requirement has to be a jsonobject");
-
-            if (!jsonObject.has("type")) throw new MalformedRecipeFileException("Requirement requires type parameter");
-            String type = jsonObject.getString("type");
-            BaseRequirement requirement = CustomRecipesAPI.getInstance().getRequirements().get(type);
-            if (requirement == null) throw new InvalidRecipeValueException("Unknown type " + type);
-
-            requirements.add(requirement.parse(jsonObject));
-        }
-        return requirements;
-    }
 }
