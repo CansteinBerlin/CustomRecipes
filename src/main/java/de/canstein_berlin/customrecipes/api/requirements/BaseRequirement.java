@@ -15,6 +15,8 @@ public abstract class BaseRequirement {
 
     public abstract BaseRequirement parse(JSONObject object) throws MalformedRecipeFileException;
 
+    public abstract JSONObject serialize();
+
     public abstract boolean check(CraftItemEvent event);
 
     public String getId() {
