@@ -1,20 +1,21 @@
-package de.canstein_berlin.customrecipes.api.recipes.parser.type;
+package de.canstein_berlin.customrecipes.api.recipes.serializer.type;
 
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
-import de.canstein_berlin.customrecipes.api.recipes.parser.BaseRecipeParser;
+import de.canstein_berlin.customrecipes.api.recipes.serializer.BaseRecipeSerializer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.StonecuttingRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONObject;
 
-public class StonecuttingRecipeParser extends BaseRecipeParser {
+public class StonecuttingRecipeSerializer extends BaseRecipeSerializer {
 
-    public StonecuttingRecipeParser() {
-        super("minecraft:stonecutting");
+    public StonecuttingRecipeSerializer() {
+        super("minecraft:stonecutting", StonecuttingRecipe.class);
     }
 
     @Override
@@ -39,4 +40,28 @@ public class StonecuttingRecipeParser extends BaseRecipeParser {
 
         return new CustomRecipe(namespacedKey, recipe);
     }
+
+    @Override
+    public JSONObject serialize(Recipe r) {
+        StonecuttingRecipe recipe = ((StonecuttingRecipe) r);
+
+        JSONObject master = new JSONObject();
+        //Type
+        master.put("type", getId());
+
+        //Result
+        ItemStack result = recipe.getResult();
+        JSONObject resultJson = serializeItemStack(result, false);
+        master.put("result", resultJson);
+
+        //Group
+        if (recipe.getGroup().length() != 0) master.put("group", recipe.getGroup());
+
+        //Ingredients
+        RecipeChoice inputChoice = recipe.getInputChoice();
+        Object inputJson = serializeRecipeChoice(inputChoice);
+        master.put("ingredient", inputJson);
+        return master;
+    }
+
 }

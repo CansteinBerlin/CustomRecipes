@@ -1,20 +1,21 @@
-package de.canstein_berlin.customrecipes.api.recipes.parser.type;
+package de.canstein_berlin.customrecipes.api.recipes.serializer.type;
 
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
-import de.canstein_berlin.customrecipes.api.recipes.parser.BaseRecipeParser;
+import de.canstein_berlin.customrecipes.api.recipes.serializer.BaseRecipeSerializer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.SmithingRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONObject;
 
-public class SmithingRecipeParser extends BaseRecipeParser {
+public class SmithingRecipeSerializer extends BaseRecipeSerializer {
 
-    public SmithingRecipeParser() {
-        super("minecraft:smithing");
+    public SmithingRecipeSerializer() {
+        super("minecraft:smithing", SmithingRecipe.class);
     }
 
     @Override
@@ -41,5 +42,26 @@ public class SmithingRecipeParser extends BaseRecipeParser {
         SmithingRecipe recipe = new SmithingRecipe(namespacedKey, result, base, addition, copyNBT);
 
         return new CustomRecipe(namespacedKey, recipe);
+    }
+
+    @Override
+    public JSONObject serialize(Recipe r) {
+        SmithingRecipe recipe = ((SmithingRecipe) r);
+
+        JSONObject master = new JSONObject();
+        //Type
+        master.put("type", getId());
+
+        //Result
+        ItemStack result = recipe.getResult();
+        JSONObject resultJson = serializeItemStack(result, false);
+        master.put("result", resultJson);
+
+        //Addition
+        master.put("addition", serializeRecipeChoice(recipe.getAddition()));
+
+        //Base
+        master.put("base", serializeRecipeChoice(recipe.getBase()));
+        return master;
     }
 }

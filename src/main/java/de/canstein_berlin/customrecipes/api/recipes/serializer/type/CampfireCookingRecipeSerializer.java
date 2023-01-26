@@ -1,17 +1,18 @@
-package de.canstein_berlin.customrecipes.api.recipes.parser.type;
+package de.canstein_berlin.customrecipes.api.recipes.serializer.type;
 
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
-import org.bukkit.inventory.BlastingRecipe;
+import org.bukkit.inventory.CampfireRecipe;
 import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONObject;
 
-public class BlastingRecipeParser extends SmeltingRecipeParser {
+public class CampfireCookingRecipeSerializer extends SmeltingRecipeSerializer {
 
-    public BlastingRecipeParser() {
-        super("minecraft:blasting");
+    public CampfireCookingRecipeSerializer() {
+        super("minecraft:campfire_cooking", CampfireRecipe.class);
     }
 
     @Override
@@ -19,11 +20,19 @@ public class BlastingRecipeParser extends SmeltingRecipeParser {
         CustomRecipe recipe = super.parse(jsonObject, plugin, filename);
 
         FurnaceRecipe r = ((FurnaceRecipe) recipe.getRecipe());
-        BlastingRecipe blastingRecipe = new BlastingRecipe(r.getKey(), r.getResult(), r.getInputChoice(), r.getExperience(), r.getCookingTime());
+        CampfireRecipe blastingRecipe = new CampfireRecipe(r.getKey(), r.getResult(), r.getInputChoice(), r.getExperience(), r.getCookingTime());
         blastingRecipe.setGroup(r.getGroup());
 
         recipe.setRecipe(blastingRecipe);
 
         return recipe;
+    }
+
+    @Override
+    public JSONObject serialize(Recipe r) {
+        JSONObject jsonObject = super.serialize(r);
+        jsonObject.put("type", getId());
+
+        return jsonObject;
     }
 }

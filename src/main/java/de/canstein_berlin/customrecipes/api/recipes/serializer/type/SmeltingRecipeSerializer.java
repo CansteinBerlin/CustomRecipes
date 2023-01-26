@@ -1,24 +1,22 @@
-package de.canstein_berlin.customrecipes.api.recipes.parser.type;
+package de.canstein_berlin.customrecipes.api.recipes.serializer.type;
 
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
-import de.canstein_berlin.customrecipes.api.recipes.parser.BaseRecipeParser;
+import de.canstein_berlin.customrecipes.api.recipes.serializer.BaseRecipeSerializer;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.FurnaceRecipe;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONObject;
 
-public class SmeltingRecipeParser extends BaseRecipeParser {
+public class SmeltingRecipeSerializer extends BaseRecipeSerializer {
 
-    public SmeltingRecipeParser() {
-        super("minecraft:smelting");
+    public SmeltingRecipeSerializer() {
+        super("minecraft:smelting", FurnaceRecipe.class);
     }
 
-    public SmeltingRecipeParser(String id) {
-        super(id);
+    public SmeltingRecipeSerializer(String id, Class<?> cls) {
+        super(id, cls);
     }
 
     @Override
@@ -44,5 +42,30 @@ public class SmeltingRecipeParser extends BaseRecipeParser {
         if (jsonObject.has("group")) recipe.setGroup(jsonObject.getString("group"));
 
         return new CustomRecipe(namespacedKey, recipe);
+    }
+
+    @Override
+    public JSONObject serialize(Recipe r) {
+        CookingRecipe recipe = ((CookingRecipe) r);
+
+        JSONObject master = new JSONObject();
+        //Type
+        master.put("type", getId());
+
+        //Result
+        ItemStack result = recipe.getResult();
+        JSONObject resultJson = serializeItemStack(result, false);
+        master.put("result", resultJson);
+
+        //Cooking Time
+        master.put("cookingtime", recipe.getCookingTime());
+
+        //Experience
+        master.put("experience", recipe.getExperience());
+
+        //Ingredient
+        master.put("ingredient", serializeRecipeChoice(recipe.getInputChoice()));
+
+        return master;
     }
 }

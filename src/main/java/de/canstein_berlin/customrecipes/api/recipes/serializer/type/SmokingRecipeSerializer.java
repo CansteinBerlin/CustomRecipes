@@ -1,17 +1,18 @@
-package de.canstein_berlin.customrecipes.api.recipes.parser.type;
+package de.canstein_berlin.customrecipes.api.recipes.serializer.type;
 
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
 import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.SmokingRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONObject;
 
-public class SmokingRecipeParser extends SmeltingRecipeParser {
+public class SmokingRecipeSerializer extends SmeltingRecipeSerializer {
 
-    public SmokingRecipeParser() {
-        super("minecraft:smoking");
+    public SmokingRecipeSerializer() {
+        super("minecraft:smoking", SmokingRecipe.class);
     }
 
     @Override
@@ -25,5 +26,13 @@ public class SmokingRecipeParser extends SmeltingRecipeParser {
         recipe.setRecipe(blastingRecipe);
 
         return recipe;
+    }
+
+    @Override
+    public JSONObject serialize(Recipe r) {
+        JSONObject jsonObject = super.serialize(r);
+        jsonObject.put("type", getId());
+
+        return jsonObject;
     }
 }
