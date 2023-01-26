@@ -1,4 +1,4 @@
-package de.canstein_berlin.customrecipes.api.recipes.parser;
+package de.canstein_berlin.customrecipes.api.recipes.serializer;
 
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
@@ -15,21 +15,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RecipeParserFactory {
+public class RecipeSerializerFactory {
 
-    private static RecipeParserFactory instance;
+    private static RecipeSerializerFactory instance;
 
-    private final HashMap<String, BaseRecipeParser> parsers;
+    private final HashMap<String, BaseRecipeSerializer> parsers;
     private final HashMap<String, BaseRequirement> requirements;
 
-    private RecipeParserFactory() {
+    private RecipeSerializerFactory() {
         instance = this;
         parsers = new HashMap<>();
         requirements = new HashMap<>();
     }
 
-    public static RecipeParserFactory getInstance() {
-        if (instance == null) return new RecipeParserFactory();
+    public static RecipeSerializerFactory getInstance() {
+        if (instance == null) return new RecipeSerializerFactory();
         return instance;
     }
 
@@ -48,7 +48,7 @@ public class RecipeParserFactory {
         String type = jsonObject.getString("type");
 
         CustomRecipe recipe = null;
-        for (Map.Entry<String, BaseRecipeParser> entry : parsers.entrySet()) {
+        for (Map.Entry<String, BaseRecipeSerializer> entry : parsers.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(type)) {
                 recipe = entry.getValue().parse(jsonObject, plugin, file.getName());
                 break;
@@ -77,18 +77,44 @@ public class RecipeParserFactory {
                 }
             }
 
-            System.out.println(currentRequirements);
             recipe.setRequirements(currentRequirements);
         }
 
         return recipe;
     }
 
-    public HashMap<String, BaseRecipeParser> getParsers() {
+    public JSONObject customRecipeToJsonObject(JavaPlugin plugin, CustomRecipe recipe) {
+
+        System.out.println(recipe.getRecipe().getClass());
+
+        //Recipe Json
+        JSONObject recipeJson = null;
+        for (BaseRecipeSerializer serializer : parsers.values()) {
+            if (serializer.getRecipeClass().equals(recipe.getRecipe().getClass())) {
+                recipeJson = serializer.serialize(recipe.getRecipe());
+                break;
+            }
+        }
+
+        if (recipeJson == null) return null;
+
+        //Requirements
+        JSONArray jsonArray = new JSONArray();
+        for (BaseRequirement requirement : recipe.getRequirements()) {
+            JSONObject jsonObject = requirement.serialize();
+            jsonArray.put(jsonObject);
+        }
+
+        if (!jsonArray.isEmpty()) recipeJson.put("requirements", jsonArray);
+
+        return recipeJson;
+    }
+
+    public HashMap<String, BaseRecipeSerializer> getParsers() {
         return parsers;
     }
 
-    public void addParser(BaseRecipeParser recipeParser) {
+    public void addParser(BaseRecipeSerializer recipeParser) {
         parsers.put(recipeParser.getId(), recipeParser);
     }
 
