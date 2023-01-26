@@ -9,22 +9,26 @@
     - [X] Blasting
     - [X] Stonecutting
     - [X] Smithing
-- [ ] Recipes contain nbt
-- [ ] Check Modules:
-    - [ ] Craftable only with specific permission
-    - [ ] Definable in the recipe file
+- [X] Recipes contain nbt
+- [X] Check Modules:
+    - [X] Craftable only with specific permission
+    - [X] Gamemode
+    - [X] Definable in the recipe file
 - [ ] Gui to display all registered recipes.
 - [ ] Enable Disable recipes at runtime
 
 - [ ] API
     - [X] Register Recipes
-    - [ ] Unregister Recipes
-    - [ ] Requirements:
-        - [ ] Create new Requirements
+    - [X] Unregister Recipes
+    - [X] Requirements:
+        - [X] Create new Requirements
         - [ ] Alter requirements of recipes
-        - [ ] Register new Requirements, that the parser can use
-    - [ ] Recipes
+        - [X] Register new Requirements, that the parser can use
+    - [X] Recipes
         - [X] Load Recipes from file or from string
-        - [ ] Save Recipes to file or string, with or without requirements
-    - [ ] Util
-        - [ ] Get NamespacedKey from Recipe
+        - [X] Save Recipes to file or string, with or without requirements
+    - [X] Util
+        - [X] Get NamespacedKey from Recipe
+
+- [ ] JAVADOC!!!
+- [ ] TESTS
