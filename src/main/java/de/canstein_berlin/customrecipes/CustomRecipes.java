@@ -1,6 +1,7 @@
 package de.canstein_berlin.customrecipes;
 
 import de.canstein_berlin.customrecipes.api.CustomRecipesAPI;
+import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
 import de.canstein_berlin.customrecipes.listeners.ItemCraftListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,7 +32,9 @@ public final class CustomRecipes extends JavaPlugin {
         //Load recipes from recipes folder
 
         for (String file : getRecipesFromFolder("recipes")) {
-            CustomRecipesAPI.getInstance().createAndRegister(this, file);
+            CustomRecipe recipe = CustomRecipesAPI.getInstance().createAndRegister(this, file);
+            recipe.writeToFile(this, getDataFolder());
+
         }
 
     }
