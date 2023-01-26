@@ -49,6 +49,18 @@ public class GamemodeRequirement extends BaseRequirement {
     }
 
     @Override
+    public JSONObject serialize() {
+        JSONObject jsonObject = new JSONObject();
+        //Type
+        jsonObject.put("type", getId());
+
+        //Gamemodes
+        jsonObject.put("gamemodes", gameModes);
+
+        return jsonObject;
+    }
+
+    @Override
     public boolean check(CraftItemEvent event) {
         if (!(event.getInventory().getHolder() instanceof Player)) return false;
 
