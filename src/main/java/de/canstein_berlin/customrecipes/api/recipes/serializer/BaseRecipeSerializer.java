@@ -1,15 +1,18 @@
-package de.canstein_berlin.customrecipes.api.recipes.parser;
+package de.canstein_berlin.customrecipes.api.recipes.serializer;
 
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
+import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONArray;
@@ -19,15 +22,19 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-public abstract class BaseRecipeParser {
+public abstract class BaseRecipeSerializer {
 
     private final String id;
+    private final Class<?> recipeClass;
 
-    public BaseRecipeParser(String id) {
+    public BaseRecipeSerializer(String id, Class<?> recipeClass) {
         this.id = id;
+        this.recipeClass = recipeClass;
     }
 
     public abstract CustomRecipe parse(JSONObject jsonObject, JavaPlugin plugin, String filename) throws MalformedRecipeFileException, InvalidRecipeValueException;
+
+    public abstract JSONObject serialize(Recipe recipe);
 
     public String getId() {
         return id;
@@ -57,6 +64,51 @@ public abstract class BaseRecipeParser {
         }
 
         return result;
+    }
+
+    protected JSONObject serializeItemStack(ItemStack stack, boolean ignoreNBT) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("item", stack.getType().getKey().toString());
+
+        if (stack.getAmount() > 1) jsonObject.put("count", stack.getAmount());
+
+        if (!ignoreNBT) {
+            ReadWriteNBT nbt = NBT.itemStackToNBT(stack);
+            if (nbt.hasTag("tag")) {
+                jsonObject.put("nbt", new JSONObject(nbt.getCompound("tag").toString()));
+            }
+        }
+        return jsonObject;
+    }
+
+    protected Object serializeRecipeChoice(RecipeChoice recipeChoice) {
+        if (recipeChoice instanceof RecipeChoice.MaterialChoice)
+            return serializeMaterialChoice(((RecipeChoice.MaterialChoice) recipeChoice));
+        return serializeExactChoice(((RecipeChoice.ExactChoice) recipeChoice));
+    }
+
+    private Object serializeMaterialChoice(RecipeChoice.MaterialChoice recipeChoice) {
+        if (recipeChoice.getChoices().size() == 1) {
+            return serializeItemStack(new ItemStack(recipeChoice.getChoices().get(0)), true);
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        for (Material m : recipeChoice.getChoices()) {
+            jsonArray.put(serializeItemStack(new ItemStack(m), true));
+        }
+        return jsonArray;
+    }
+
+    private Object serializeExactChoice(RecipeChoice.ExactChoice recipeChoice) {
+        if (recipeChoice.getChoices().size() == 1) {
+            return serializeItemStack(new ItemStack(recipeChoice.getChoices().get(0)), false);
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        for (ItemStack stack : recipeChoice.getChoices()) {
+            jsonArray.put(serializeItemStack(stack, true));
+        }
+        return jsonArray;
     }
 
     private RecipeChoice getRecipeChoice(JSONObject jsonObject) throws InvalidRecipeValueException, MalformedRecipeFileException {
@@ -133,4 +185,7 @@ public abstract class BaseRecipeParser {
         throw new InvalidRecipeValueException("Malformed Ingredient list");
     }
 
+    public Class<?> getRecipeClass() {
+        return recipeClass;
+    }
 }
