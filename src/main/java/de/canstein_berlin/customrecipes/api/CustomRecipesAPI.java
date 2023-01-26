@@ -1,9 +1,9 @@
 package de.canstein_berlin.customrecipes.api;
 
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
-import de.canstein_berlin.customrecipes.api.recipes.parser.BaseRecipeParser;
-import de.canstein_berlin.customrecipes.api.recipes.parser.RecipeParserFactory;
-import de.canstein_berlin.customrecipes.api.recipes.parser.type.*;
+import de.canstein_berlin.customrecipes.api.recipes.serializer.BaseRecipeSerializer;
+import de.canstein_berlin.customrecipes.api.recipes.serializer.RecipeSerializerFactory;
+import de.canstein_berlin.customrecipes.api.recipes.serializer.type.*;
 import de.canstein_berlin.customrecipes.api.requirements.BaseRequirement;
 import de.canstein_berlin.customrecipes.api.requirements.type.GamemodeRequirement;
 import de.canstein_berlin.customrecipes.api.requirements.type.PermissionRequirement;
@@ -27,15 +27,15 @@ public class CustomRecipesAPI {
 
         recipesWithRequirements = new HashMap<>();
 
-        //Register parser
-        registerParser(new CraftingShapedRecipeParser());
-        registerParser(new CraftingShapelessRecipeParser());
-        registerParser(new SmeltingRecipeParser());
-        registerParser(new BlastingRecipeParser());
-        registerParser(new SmokingRecipeParser());
-        registerParser(new CampfireCookingRecipeParser());
-        registerParser(new StonecuttingRecipeParser());
-        registerParser(new SmithingRecipeParser());
+        //Register serializer
+        registerParser(new CraftingShapedRecipeSerializer());
+        registerParser(new CraftingShapelessRecipeSerializer());
+        registerParser(new SmeltingRecipeSerializer());
+        registerParser(new BlastingRecipeSerializer());
+        registerParser(new SmokingRecipeSerializer());
+        registerParser(new CampfireCookingRecipeSerializer());
+        registerParser(new StonecuttingRecipeSerializer());
+        registerParser(new SmithingRecipeSerializer());
 
         //Register Requirements
         registerNewRequirement(new PermissionRequirement());
@@ -56,14 +56,16 @@ public class CustomRecipesAPI {
         return null;
     }
 
-    public boolean createAndRegister(JavaPlugin plugin, String file) {
+    public CustomRecipe createAndRegister(JavaPlugin plugin, String file) {
         return createAndRegister(plugin, new File(plugin.getDataFolder(), file));
     }
 
-    public boolean createAndRegister(JavaPlugin plugin, File file) {
+    public CustomRecipe createAndRegister(JavaPlugin plugin, File file) {
         CustomRecipe recipe = CustomRecipe.fromResource(plugin, file);
-        if (recipe == null) return false;
-        return registerRecipes(recipe);
+        if (recipe == null) return null;
+        if (!registerRecipes(recipe)) return null;
+        
+        return recipe;
     }
 
     public boolean registerRecipes(CustomRecipe recipe) {
@@ -91,12 +93,12 @@ public class CustomRecipesAPI {
         Bukkit.removeRecipe(getNamespacedKeyFromRecipe(recipe));
     }
 
-    public void registerParser(BaseRecipeParser recipeParser) {
-        RecipeParserFactory.getInstance().addParser(recipeParser);
+    public void registerParser(BaseRecipeSerializer recipeParser) {
+        RecipeSerializerFactory.getInstance().addParser(recipeParser);
     }
 
     public void registerNewRequirement(BaseRequirement requirement) {
-        RecipeParserFactory.getInstance().addRequirement(requirement);
+        RecipeSerializerFactory.getInstance().addRequirement(requirement);
     }
 
     public boolean canCraftRecipe(Recipe recipe, CraftItemEvent event) {
