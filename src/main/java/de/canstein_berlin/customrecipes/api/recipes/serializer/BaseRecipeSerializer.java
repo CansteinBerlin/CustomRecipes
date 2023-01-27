@@ -150,12 +150,18 @@ public abstract class BaseRecipeSerializer {
     private RecipeChoice getRecipeChoice(JSONObject jsonObject) throws InvalidRecipeValueException, MalformedRecipeFileException {
         if (jsonObject.has("tag")) {
             NamespacedKey key = NamespacedKey.fromString(jsonObject.getString("tag"));
-            if (key == null)
-                throw new InvalidRecipeValueException("Invalid Tag Key: \" + " + jsonObject.getString("tag") + "\"");
-            Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, key, Material.class);
-            if (tag == null)
-                throw new InvalidRecipeValueException("Invalid Tag Key: \" + " + jsonObject.getString("tag") + "\"");
-            return new RecipeChoice.MaterialChoice(tag);
+            if (key == null) {
+                throw new InvalidRecipeValueException("Invalid Tag Key: \"" + jsonObject.getString("tag") + "\"");
+            }
+            Tag<Material> blockTag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, key, Material.class);
+            Tag<Material> itemTag = Bukkit.getTag(Tag.REGISTRY_ITEMS, key, Material.class);
+            if (blockTag != null) {
+                return new RecipeChoice.MaterialChoice(blockTag);
+            } else if (itemTag != null) {
+                return new RecipeChoice.MaterialChoice(itemTag);
+            }
+
+            throw new InvalidRecipeValueException("Invalid Tag Key: \"" + jsonObject.getString("tag") + "\"");
         }
         if (!jsonObject.has("item")) {
             throw new MalformedRecipeFileException("Missing key \"item\" or \"tag\"");

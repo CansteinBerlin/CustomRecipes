@@ -30,11 +30,12 @@ public final class CustomRecipes extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ItemCraftListener(), this);
 
         //Load recipes from recipes folder
-
+        new File(getDataFolder(), "/out/").mkdir();
         for (String file : getRecipesFromFolder("recipes")) {
             CustomRecipe recipe = CustomRecipesAPI.getInstance().createAndRegister(this, file);
-            recipe.writeToFile(getDataFolder());
-
+            if (recipe == null) continue;
+            recipe.writeToFile(new File(getDataFolder(), "/out/"));
+            CustomRecipesAPI.getInstance().unregisterRecipe(recipe);
         }
 
     }

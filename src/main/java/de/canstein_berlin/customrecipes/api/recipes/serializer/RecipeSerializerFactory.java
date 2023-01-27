@@ -49,7 +49,6 @@ public class RecipeSerializerFactory {
     public CustomRecipe loadFromFile(JavaPlugin plugin, File file) throws IOException, MalformedRecipeFileException, InvalidRecipeValueException {
         JSONObject jsonObject;
         jsonObject = new JSONObject(Files.readString(file.toPath()));
-
         if (!jsonObject.has("type")) {
             throw new MalformedRecipeFileException("Missing element \"type\"");
         }
@@ -98,9 +97,6 @@ public class RecipeSerializerFactory {
      * @return Serialized json object
      */
     public JSONObject customRecipeToJsonObject(CustomRecipe recipe) {
-
-        System.out.println(recipe.getRecipe().getClass());
-
         //Recipe Json
         JSONObject recipeJson = null;
         for (BaseRecipeSerializer serializer : parsers.values()) {
@@ -136,7 +132,7 @@ public class RecipeSerializerFactory {
     public void addParser(BaseRecipeSerializer recipeParser) {
         parsers.put(recipeParser.getId(), recipeParser);
     }
-    
+
     /**
      * Adds a new requirement to be used while parsing requirements
      *
