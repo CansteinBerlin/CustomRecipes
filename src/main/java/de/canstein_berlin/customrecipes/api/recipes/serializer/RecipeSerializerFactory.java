@@ -83,7 +83,7 @@ public class RecipeSerializerFactory {
         return recipe;
     }
 
-    public JSONObject customRecipeToJsonObject(JavaPlugin plugin, CustomRecipe recipe) {
+    public JSONObject customRecipeToJsonObject(CustomRecipe recipe) {
 
         System.out.println(recipe.getRecipe().getClass());
 

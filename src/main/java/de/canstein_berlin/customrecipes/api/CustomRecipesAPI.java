@@ -28,25 +28,34 @@ public class CustomRecipesAPI {
         recipesWithRequirements = new HashMap<>();
 
         //Register serializer
-        registerParser(new CraftingShapedRecipeSerializer());
-        registerParser(new CraftingShapelessRecipeSerializer());
-        registerParser(new SmeltingRecipeSerializer());
-        registerParser(new BlastingRecipeSerializer());
-        registerParser(new SmokingRecipeSerializer());
-        registerParser(new CampfireCookingRecipeSerializer());
-        registerParser(new StonecuttingRecipeSerializer());
-        registerParser(new SmithingRecipeSerializer());
+        registerSerializer(new CraftingShapedRecipeSerializer());
+        registerSerializer(new CraftingShapelessRecipeSerializer());
+        registerSerializer(new SmeltingRecipeSerializer());
+        registerSerializer(new BlastingRecipeSerializer());
+        registerSerializer(new SmokingRecipeSerializer());
+        registerSerializer(new CampfireCookingRecipeSerializer());
+        registerSerializer(new StonecuttingRecipeSerializer());
+        registerSerializer(new SmithingRecipeSerializer());
 
         //Register Requirements
         registerNewRequirement(new PermissionRequirement());
         registerNewRequirement(new GamemodeRequirement());
     }
 
+    /**
+     * This is how to access the API!
+     **/
     public static CustomRecipesAPI getInstance() {
         if (instance == null) return new CustomRecipesAPI();
         return instance;
     }
 
+    /**
+     * Get the NamespaceKey from an Recipe. Does not work for {@link MerchantRecipe}
+     *
+     * @param recipe Recipe to get the key from
+     * @return NamespacedKey of the Recipe of null if unknown recipe type
+     */
     public static NamespacedKey getNamespacedKeyFromRecipe(Recipe recipe) {
         if (recipe instanceof ShapedRecipe) return ((ShapedRecipe) recipe).getKey();
         if (recipe instanceof ShapelessRecipe) return ((ShapelessRecipe) recipe).getKey();
@@ -56,19 +65,43 @@ public class CustomRecipesAPI {
         return null;
     }
 
+    /**
+     * Create and register a recipe.
+     *
+     * @param plugin plugin that wants to register the recipe
+     * @param file   file path to the recipe file based on the datafolder of the plugin
+     * @return The created recipe of null if an error occurred
+     * @see CustomRecipe#fromResource(JavaPlugin, File)
+     * @see CustomRecipesAPI#registerRecipe(CustomRecipe)
+     */
     public CustomRecipe createAndRegister(JavaPlugin plugin, String file) {
         return createAndRegister(plugin, new File(plugin.getDataFolder(), file));
     }
 
+    /**
+     * Create and register a recipe.
+     *
+     * @param plugin plugin that wants to register the recipe
+     * @param file   File object that points to the location of the file
+     * @return The created recipe of null if an error occurred
+     * @see CustomRecipe#fromResource(JavaPlugin, File)
+     * @see CustomRecipesAPI#registerRecipe(CustomRecipe)
+     */
     public CustomRecipe createAndRegister(JavaPlugin plugin, File file) {
         CustomRecipe recipe = CustomRecipe.fromResource(plugin, file);
         if (recipe == null) return null;
-        if (!registerRecipes(recipe)) return null;
-        
+        if (!registerRecipe(recipe)) return null;
+
         return recipe;
     }
 
-    public boolean registerRecipes(CustomRecipe recipe) {
+    /**
+     * Register a Custom Recipe from this plugin
+     *
+     * @param recipe Recipe to register
+     * @return true if registration was successful, false otherwise
+     */
+    public boolean registerRecipe(CustomRecipe recipe) {
         unregisterRecipe(recipe);
 
         boolean value = Bukkit.addRecipe(recipe.getRecipe());
@@ -78,29 +111,64 @@ public class CustomRecipesAPI {
         return value;
     }
 
-    public boolean registerRecipes(Recipe recipe) {
+    /**
+     * Register a Bukkit recipe
+     *
+     * @param recipe Recipe to register
+     * @return true if registration was successful, false otherwise
+     */
+    public boolean registerRecipe(Recipe recipe) {
         unregisterRecipe(recipe);
 
         return Bukkit.addRecipe(recipe);
     }
 
+    /**
+     * Unregister CustomRecipe from this plugin
+     *
+     * @param recipe Recipe to unregister
+     */
     public void unregisterRecipe(CustomRecipe recipe) {
         Bukkit.removeRecipe(recipe.getNamespacedKey());
         recipesWithRequirements.remove(recipe.getNamespacedKey());
     }
 
+    /**
+     * Unregister Bukkit recipe
+     *
+     * @param recipe Recipe to unregister
+     */
     public void unregisterRecipe(Recipe recipe) {
         Bukkit.removeRecipe(getNamespacedKeyFromRecipe(recipe));
     }
 
-    public void registerParser(BaseRecipeSerializer recipeParser) {
+    /**
+     * Register a parser that can parse custom recipe files
+     *
+     * @param recipeParser Parser to register
+     * @see BaseRecipeSerializer
+     */
+    public void registerSerializer(BaseRecipeSerializer recipeParser) {
         RecipeSerializerFactory.getInstance().addParser(recipeParser);
     }
 
+    /**
+     * Register a new Requirement for the parser to use
+     *
+     * @param requirement Requirement to register
+     * @see BaseRequirement
+     */
     public void registerNewRequirement(BaseRequirement requirement) {
         RecipeSerializerFactory.getInstance().addRequirement(requirement);
     }
 
+    /**
+     * Somewhat internal method to check if a recipe register as a custom recipe can be crafted.
+     *
+     * @param recipe Bukkit Recipe that should be checked
+     * @param event  event to gather information about the player and the environment
+     * @return true if the recipe can be crafted, false if any requirement fails
+     */
     public boolean canCraftRecipe(Recipe recipe, CraftItemEvent event) {
         NamespacedKey key = getNamespacedKeyFromRecipe(recipe);
         if (recipesWithRequirements.containsKey(key)) {

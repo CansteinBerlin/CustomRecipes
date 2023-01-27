@@ -28,6 +28,33 @@ public class GamemodeRequirement extends BaseRequirement {
         this.gameModes = gameModes;
     }
 
+    /**
+     * The player has to have the defined Gamemode, or one of them if multiple are defined.
+     * <p>
+     * Valid {@link GameMode}: SURVIVAL, ADVENTURE, CREATIVE, SPECTATOR
+     * <p>
+     * Structure of the Requirement:
+     * {@code
+     * {
+     * "type": "gamemode",
+     * "gamemodes": "SURVIVAL"
+     * }
+     * }
+     * <p>
+     * or {@code
+     * {
+     * "type": "gamemode",
+     * "gamemodes": [
+     * "SURVIVAL",
+     * "CREATIVE"
+     * ]
+     * }
+     * }
+     *
+     * @param object Requirement json
+     * @return new GamemodeRequirement
+     * @throws MalformedRecipeFileException
+     */
     @Override
     public BaseRequirement parse(JSONObject object) throws MalformedRecipeFileException {
         if (!object.has("gamemodes"))

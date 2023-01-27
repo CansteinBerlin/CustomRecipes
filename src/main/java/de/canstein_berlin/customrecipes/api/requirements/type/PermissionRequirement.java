@@ -25,6 +25,33 @@ public class PermissionRequirement extends BaseRequirement {
         this.permissions = permissions;
     }
 
+    /**
+     * The player has to have the defined permission, or one of them if multiple are defined. If you need the player to have multiple permission just use another permission requirement
+     * <p>
+     *
+     * <p>
+     * Structure of the Requirement:
+     * {@code
+     * {
+     * "type": "permission",
+     * "permissions": "perm.a"
+     * }
+     * }
+     * <p>
+     * or {@code
+     * {
+     * "type": "permission",
+     * "permissions": [
+     * "perm.a",
+     * "perm.b"
+     * ]
+     * }
+     * }
+     *
+     * @param object Requirement json
+     * @return new PermissionRequirement
+     * @throws MalformedRecipeFileException
+     */
     @Override
     public BaseRequirement parse(JSONObject object) throws MalformedRecipeFileException {
         if (!object.has("permissions"))

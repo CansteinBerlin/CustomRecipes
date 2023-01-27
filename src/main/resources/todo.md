@@ -17,12 +17,12 @@
 - [ ] Gui to display all registered recipes.
 - [ ] Enable Disable recipes at runtime
 
-- [ ] API
+- [X] API
     - [X] Register Recipes
     - [X] Unregister Recipes
     - [X] Requirements:
         - [X] Create new Requirements
-        - [ ] Alter requirements of recipes
+        - [X] Alter requirements of recipes
         - [X] Register new Requirements, that the parser can use
     - [X] Recipes
         - [X] Load Recipes from file or from string

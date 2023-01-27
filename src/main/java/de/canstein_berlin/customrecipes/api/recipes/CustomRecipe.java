@@ -22,6 +22,12 @@ public class CustomRecipe {
     private final ArrayList<BaseRequirement> requirements;
     private Recipe recipe;
 
+    /**
+     * Create and empty Custom Recipe that can be populated in your plugin
+     *
+     * @param namespacedKey Identifier of the recipe
+     * @param recipe        The recipe itself
+     */
     public CustomRecipe(NamespacedKey namespacedKey, Recipe recipe) {
         this.recipe = recipe;
         this.namespacedKey = namespacedKey;
@@ -29,6 +35,13 @@ public class CustomRecipe {
         requirements = new ArrayList<>();
     }
 
+    /**
+     * Parse a Custom Recipe from a file
+     *
+     * @param plugin plugin that wants the recipe to be parsed
+     * @param file   File that contains the recipe
+     * @return Parsed Custom Recipe of null if an error occurred
+     */
     public static CustomRecipe fromResource(JavaPlugin plugin, File file) {
         try {
             return RecipeSerializerFactory.getInstance().loadFromFile(plugin, file);
@@ -38,10 +51,19 @@ public class CustomRecipe {
         }
     }
 
+    /**
+     * @see CustomRecipe#fromResource(JavaPlugin, File)
+     */
     public static CustomRecipe fromResource(JavaPlugin plugin, String path) {
         return fromResource(plugin, new File(plugin.getDataFolder(), path));
     }
 
+    /**
+     * Compare this recipe with a bukkit recipe based on the NamespacedKey
+     *
+     * @param recipe Recipe to be compared with
+     * @return true if NamesoacedKey's are the same
+     */
     public boolean compareWithRecipe(Recipe recipe) {
         return CustomRecipesAPI.getNamespacedKeyFromRecipe(recipe).equals(namespacedKey);
     }
@@ -50,6 +72,11 @@ public class CustomRecipe {
         return requirements.size() > 0;
     }
 
+    /**
+     * Add a requirement to the recipe.
+     *
+     * @param requirement Requirement to be added
+     */
     public void addRequirement(BaseRequirement requirement) {
         this.requirements.add(requirement);
     }
@@ -83,12 +110,22 @@ public class CustomRecipe {
         return true;
     }
 
+    /**
+     * Save the recipe to the path inside the plugins datafolder
+     *
+     * @see CustomRecipe#writeToFile(File)
+     */
     public void writeToFile(JavaPlugin plugin, String path) {
-        writeToFile(plugin, new File(plugin.getDataFolder(), path));
+        writeToFile(new File(plugin.getDataFolder(), path));
     }
 
-    public void writeToFile(JavaPlugin plugin, File path) {
-        JSONObject jsonObject = RecipeSerializerFactory.getInstance().customRecipeToJsonObject(plugin, this);
+    /**
+     * Write the custom recipe including it's defined requirements to the specified file. If the provided file points to a directory the file is created inside the directory with the same name as the NamespacedKey
+     *
+     * @param path File to save to
+     */
+    public void writeToFile(File path) {
+        JSONObject jsonObject = RecipeSerializerFactory.getInstance().customRecipeToJsonObject(this);
         if (path.isDirectory()) {
             path = new File(path, namespacedKey.getKey() + ".json");
         }

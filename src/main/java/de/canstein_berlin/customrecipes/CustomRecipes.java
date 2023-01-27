@@ -33,7 +33,7 @@ public final class CustomRecipes extends JavaPlugin {
 
         for (String file : getRecipesFromFolder("recipes")) {
             CustomRecipe recipe = CustomRecipesAPI.getInstance().createAndRegister(this, file);
-            recipe.writeToFile(this, getDataFolder());
+            recipe.writeToFile(getDataFolder());
 
         }
 
