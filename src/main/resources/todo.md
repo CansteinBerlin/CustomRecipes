@@ -30,5 +30,5 @@
     - [X] Util
         - [X] Get NamespacedKey from Recipe
 
-- [ ] JAVADOC!!!
+- [X] JAVADOC!!!
 - [ ] TESTS

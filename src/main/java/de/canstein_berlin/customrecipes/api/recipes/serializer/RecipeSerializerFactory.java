@@ -28,19 +28,27 @@ public class RecipeSerializerFactory {
         requirements = new HashMap<>();
     }
 
+    /**
+     * This is how you get an instance of this class!!!
+     */
     public static RecipeSerializerFactory getInstance() {
         if (instance == null) return new RecipeSerializerFactory();
         return instance;
     }
 
+    /**
+     * Loads a custom recipe from a file. Parses both recipe and requirements
+     *
+     * @param plugin the plugin that wants to parse to file
+     * @param file   The file that contains the recipe
+     * @return Custom recipe object with the namespace, recipe and requirements parsed fron the file
+     * @throws IOException                  Thrown if an error occurs while reading the file
+     * @throws MalformedRecipeFileException Recipe file malformed
+     * @throws InvalidRecipeValueException  Recipe contains invalid values
+     */
     public CustomRecipe loadFromFile(JavaPlugin plugin, File file) throws IOException, MalformedRecipeFileException, InvalidRecipeValueException {
         JSONObject jsonObject;
-        try {
-            jsonObject = new JSONObject(Files.readString(file.toPath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        jsonObject = new JSONObject(Files.readString(file.toPath()));
 
         if (!jsonObject.has("type")) {
             throw new MalformedRecipeFileException("Missing element \"type\"");
@@ -83,6 +91,12 @@ public class RecipeSerializerFactory {
         return recipe;
     }
 
+    /**
+     * Serializes a custom Recipe to a json object.
+     *
+     * @param recipe The recipe to be serialized
+     * @return Serialized json object
+     */
     public JSONObject customRecipeToJsonObject(CustomRecipe recipe) {
 
         System.out.println(recipe.getRecipe().getClass());
@@ -114,10 +128,20 @@ public class RecipeSerializerFactory {
         return parsers;
     }
 
+    /**
+     * Adds a new parser to be used while reading recipes
+     *
+     * @param recipeParser
+     */
     public void addParser(BaseRecipeSerializer recipeParser) {
         parsers.put(recipeParser.getId(), recipeParser);
     }
-
+    
+    /**
+     * Adds a new requirement to be used while parsing requirements
+     *
+     * @param requirement
+     */
     public void addRequirement(BaseRequirement requirement) {
         requirements.put(requirement.getId(), requirement);
     }

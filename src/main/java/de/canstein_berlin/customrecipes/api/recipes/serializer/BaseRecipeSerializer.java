@@ -32,14 +32,37 @@ public abstract class BaseRecipeSerializer {
         this.recipeClass = recipeClass;
     }
 
+    /**
+     * Method called if a json object should be interpreted as a recipe
+     *
+     * @param jsonObject JsonObject to be parsed
+     * @param plugin     Plugin that wants this recipe to be parsed
+     * @param filename   Filename of the file, used for NamespacedKey
+     * @return Parsed custom recipe
+     * @throws MalformedRecipeFileException
+     * @throws InvalidRecipeValueException
+     */
     public abstract CustomRecipe parse(JSONObject jsonObject, JavaPlugin plugin, String filename) throws MalformedRecipeFileException, InvalidRecipeValueException;
 
+    /**
+     * Method called when a recipe should be converted to json
+     *
+     * @param recipe Recipe to be serialized
+     * @return Serialized recipe
+     */
     public abstract JSONObject serialize(Recipe recipe);
 
     public String getId() {
         return id;
     }
 
+    /**
+     * Convert a json object to an ItemStack
+     *
+     * @param object Json Object or string
+     * @return Interpreted ItemStack
+     * @throws MalformedRecipeFileException
+     */
     protected ItemStack getItemStack(Object object) throws MalformedRecipeFileException {
         if (object instanceof JSONObject) return getItemStack(((JSONObject) object));
         if (object instanceof String) {
@@ -66,6 +89,13 @@ public abstract class BaseRecipeSerializer {
         return result;
     }
 
+    /**
+     * Serialize an ItemStack to a Json Object
+     *
+     * @param stack     ItemStack to be converted
+     * @param ignoreNBT if true no nbt tag will be generated
+     * @return Serialized ItemStack as a Json Object
+     */
     protected JSONObject serializeItemStack(ItemStack stack, boolean ignoreNBT) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("item", stack.getType().getKey().toString());
@@ -81,6 +111,12 @@ public abstract class BaseRecipeSerializer {
         return jsonObject;
     }
 
+    /**
+     * Serialize a recipe choice to either a json object of a json array
+     *
+     * @param recipeChoice Choice to be converted
+     * @return Json Object if recipe choice only contain one item; json array of more items are present
+     */
     protected Object serializeRecipeChoice(RecipeChoice recipeChoice) {
         if (recipeChoice instanceof RecipeChoice.MaterialChoice)
             return serializeMaterialChoice(((RecipeChoice.MaterialChoice) recipeChoice));
@@ -179,6 +215,14 @@ public abstract class BaseRecipeSerializer {
         return new RecipeChoice.ExactChoice(stacks);
     }
 
+    /**
+     * Convert a json object or json array to a RecipeChoice
+     *
+     * @param o Json Object or Json array to be converted
+     * @return Converted RecipeChoice
+     * @throws InvalidRecipeValueException
+     * @throws MalformedRecipeFileException
+     */
     public RecipeChoice getRecipeChoice(Object o) throws InvalidRecipeValueException, MalformedRecipeFileException {
         if (o instanceof JSONObject) return getRecipeChoice(((JSONObject) o));
         else if (o instanceof JSONArray) return getMultipleRecipeChoice(((JSONArray) o));

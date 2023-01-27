@@ -163,7 +163,7 @@ public class CustomRecipesAPI {
     }
 
     /**
-     * Somewhat internal method to check if a recipe register as a custom recipe can be crafted.
+     * Somewhat internal method to check if a recipe registered as a custom recipe can be crafted.
      *
      * @param recipe Bukkit Recipe that should be checked
      * @param event  event to gather information about the player and the environment
