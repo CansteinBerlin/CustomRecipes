@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class CustomRecipe {
 
@@ -148,5 +149,17 @@ public class CustomRecipe {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getName() {
+        return capitalize(namespacedKey.value().replace("_", " ")) + " (" + namespacedKey.getNamespace() + ")";
+    }
+
+    private String capitalize(String s) {
+        String[] parts = s.split(" ");
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = parts[i].substring(0, 1).toUpperCase(Locale.ROOT) + parts[i].substring(1);
+        }
+        return String.join(" ", parts);
     }
 }
