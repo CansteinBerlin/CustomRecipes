@@ -14,7 +14,7 @@
     - [X] Craftable only with specific permission
     - [X] Gamemode
     - [X] Definable in the recipe file
-- [ ] Gui to display all registered recipes.
+- [X] Gui to display all registered recipes.
 - [ ] Enable Disable recipes at runtime
 
 - [X] API
@@ -31,4 +31,4 @@
         - [X] Get NamespacedKey from Recipe
 
 - [X] JAVADOC!!!
-- [ ] TESTS
+- [X] TESTS
