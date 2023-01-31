@@ -1,0 +1,1 @@
+customrecipes.commands.listallrecipesgui
