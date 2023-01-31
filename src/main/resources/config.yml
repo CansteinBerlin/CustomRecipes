@@ -1,0 +1,8 @@
+prefix: "&b[&6CustomRecipes&b]&r: "
+
+lang:
+  commands:
+    noPlayer: "&cYou have to be a player to use this command"
+    noPermission: "&cYou are not allowed to use this command"
+    listAllRecipes:
+      success: "&aSuccessfully opened the gui"
