@@ -3,3 +3,7 @@ version: '${project.version}'
 main: de.canstein_berlin.customrecipes.CustomRecipes
 api-version: 1.19
 authors: [ Hasenzahn1 ]
+
+commands:
+  listrecipes:
+    description: Open the gui to display the recipes
