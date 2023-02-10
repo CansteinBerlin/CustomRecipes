@@ -16,19 +16,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class CustomRecipesAPI {
 
     private static CustomRecipesAPI instance;
 
     private final HashMap<NamespacedKey, CustomRecipe> recipesWithRequirements;
-    private final ArrayList<CustomRecipe> definedRecipes;
+    private final HashMap<String, ArrayList<CustomRecipe>> definedRecipes;
 
     private CustomRecipesAPI() {
         instance = this;
 
         recipesWithRequirements = new HashMap<>();
-        definedRecipes = new ArrayList<>();
+        definedRecipes = new HashMap<>();
 
         //Register serializer
         registerSerializer(new CraftingShapedRecipeSerializer());
@@ -108,7 +109,11 @@ public class CustomRecipesAPI {
         unregisterRecipe(recipe);
 
         boolean value = Bukkit.addRecipe(recipe.getRecipe());
-        definedRecipes.add(recipe);
+        String key = recipe.getNamespacedKey().getNamespace();
+
+        if (!definedRecipes.containsKey(key)) definedRecipes.put(key, new ArrayList<>());
+        definedRecipes.get(key).add(recipe);
+
         if (recipe.hasRequirements()) {
             recipesWithRequirements.put(recipe.getNamespacedKey(), recipe);
         }
@@ -181,7 +186,25 @@ public class CustomRecipesAPI {
         return true;
     }
 
-    public ArrayList<CustomRecipe> getDefinedRecipes() {
-        return definedRecipes;
+    /**
+     * Returns all recipes defined in a specific namespace, input "" to get all defined recipes except the minecraft recipes
+     *
+     * @param key Valid namespace of ""
+     * @return recipes defined under the namespace or all
+     */
+    public ArrayList<CustomRecipe> getDefinedRecipes(String key) {
+        if (key.isEmpty()) {
+            ArrayList<CustomRecipe> recipes = new ArrayList<>();
+            for (ArrayList<CustomRecipe> rec : definedRecipes.values()) {
+                recipes.addAll(rec);
+            }
+            return recipes;
+        }
+
+        return definedRecipes.getOrDefault(key, new ArrayList<>());
+    }
+
+    public Set<String> getRegisteredNamespaces() {
+        return definedRecipes.keySet();
     }
 }
