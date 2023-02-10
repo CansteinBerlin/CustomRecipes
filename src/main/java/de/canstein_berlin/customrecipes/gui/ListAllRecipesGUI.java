@@ -41,6 +41,7 @@ public class ListAllRecipesGUI extends ChestGui {
                 .setDisplayName(" ")
                 .build()));
         background.setRepeat(true);
+
         background.setPriority(Pane.Priority.LOWEST);
         addPane(background);
 
