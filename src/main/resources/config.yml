@@ -6,3 +6,4 @@ lang:
     noPermission: "&cYou are not allowed to use this command"
     listAllRecipes:
       success: "&aSuccessfully opened the gui"
+      noNamespace: "&cUnknown namespace %namespace%"
