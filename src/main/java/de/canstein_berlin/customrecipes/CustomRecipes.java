@@ -1,7 +1,6 @@
 package de.canstein_berlin.customrecipes;
 
 import de.canstein_berlin.customrecipes.api.CustomRecipesAPI;
-import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
 import de.canstein_berlin.customrecipes.commands.ListRecipesCommand;
 import de.canstein_berlin.customrecipes.config.CustomConfig;
 import de.canstein_berlin.customrecipes.listeners.ItemCraftListener;
@@ -60,18 +59,13 @@ public final class CustomRecipes extends JavaPlugin {
             }
         }
 
-
         //Commands
         getCommand("listrecipes").setExecutor(new ListRecipesCommand());
         getCommand("listrecipes").setTabCompleter(new ListRecipesCommand());
 
         //Load recipes from recipes folder
-        new File(getDataFolder(), "/out/").mkdir();
         for (String file : getRecipesFromFolder("recipes")) {
-            CustomRecipe recipe = CustomRecipesAPI.getInstance().createAndRegister(this, file);
-            if (recipe == null) continue;
-            recipe.writeToFile(new File(getDataFolder(), "/out/"));
-            CustomRecipesAPI.getInstance().unregisterRecipe(recipe);
+            CustomRecipesAPI.getInstance().createAndRegister(this, file);
         }
     }
 
