@@ -15,7 +15,7 @@
     - [X] Gamemode
     - [X] Definable in the recipe file
 - [X] Gui to display all registered recipes.
-- [ ] Enable Disable recipes at runtime
+- [X] Enable Disable recipes at runtime
 
 - [X] API
     - [X] Register Recipes
