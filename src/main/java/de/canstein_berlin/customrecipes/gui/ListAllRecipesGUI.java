@@ -7,11 +7,16 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import de.canstein_berlin.customrecipes.CustomRecipes;
+import de.canstein_berlin.customrecipes.api.CustomRecipesAPI;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
 import de.canstein_berlin.customrecipes.builder.ItemBuilder;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,13 +75,56 @@ public class ListAllRecipesGUI extends ChestGui {
 
     }
 
+    public static String getNameFromMaterial(Material m) {
+        char[] chars = m.name().replace("_", " ").toLowerCase().toCharArray();
+
+        for (int counter = 0; counter < chars.length; counter++) {
+            if (counter == 0) chars[counter] = ("" + chars[counter]).toUpperCase().toCharArray()[0];
+            else {
+                if ((chars[counter - 1]) == ' ') chars[counter] = ("" + chars[counter]).toUpperCase().toCharArray()[0];
+            }
+        }
+        StringBuilder out = new StringBuilder();
+        for (char c : chars) {
+            out.append(c);
+        }
+        return out.toString();
+    }
+
     private GuiItem getItemFromRecipe(CustomRecipe recipe) {
 
         ItemStack result = recipe.getRecipe().getResult();
+
+        //Initial Setup
+        applyItemName(result, recipe);
+        applyItemLore(result, recipe);
+
+        return new GuiItem(result, event -> {
+            if (event.isShiftClick()) {
+                CustomRecipesAPI.getInstance().toggleDisabled(recipe);
+
+                //Update Item
+                applyItemName(result, recipe);
+                applyItemLore(result, recipe);
+
+                update();
+                return;
+            }
+
+            openRecipeDisplayGUI(recipe);
+        });
+    }
+
+    private void applyItemLore(ItemStack result, CustomRecipe recipe) {
         List<Component> lore = result.lore();
         if (lore == null) lore = new ArrayList<>();
 
+        lore.clear();
+
         lore.add(Component.text("§r§7Click to view"));
+        lore.add(Component.text("§r§7Shift click to " + (!CustomRecipesAPI.getInstance().isDisabled(recipe) ? "enable" : "disable")));
+        lore.add(Component.text(" "));
+        lore.add(Component.text((!CustomRecipesAPI.getInstance().isDisabled(recipe) ? "§aEnabled" : "§cDisabled")));
         lore.add(Component.text(" "));
         lore.add(Component.text("§r§5NamespacedKey:"));
         lore.add(Component.text("§r§6  " + recipe.getNamespacedKey().toString()));
@@ -84,7 +132,19 @@ public class ListAllRecipesGUI extends ChestGui {
         lore.add(Component.text("§r§6  " + getType(recipe.getRecipe())));
 
         result.lore(lore);
-        return new GuiItem(result, event -> openRecipeDisplayGUI(recipe));
+    }
+
+    private void applyItemName(ItemStack result, CustomRecipe recipe) {
+        String titleText = "[" + getNameFromMaterial(result.getType()) + "]";
+
+        Component title = Component.text(
+                titleText,
+                Style.style(!CustomRecipesAPI.getInstance().isDisabled(recipe) ? TextColor.color(0, 255, 0) : TextColor.color(255, 0, 0))
+        ).decoration(TextDecoration.ITALIC, false);
+
+        ItemMeta meta = result.getItemMeta();
+        meta.displayName(title);
+        result.setItemMeta(meta);
     }
 
     private void openRecipeDisplayGUI(CustomRecipe recipe) {
