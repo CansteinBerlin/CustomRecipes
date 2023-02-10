@@ -3,18 +3,23 @@ package de.canstein_berlin.customrecipes;
 import de.canstein_berlin.customrecipes.api.CustomRecipesAPI;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
 import de.canstein_berlin.customrecipes.commands.ListRecipesCommand;
+import de.canstein_berlin.customrecipes.config.CustomConfig;
 import de.canstein_berlin.customrecipes.listeners.ItemCraftListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class CustomRecipes extends JavaPlugin {
 
     public static CustomRecipes instance;
     public static String PREFIX = "§b[§6CustomRecipes§b]§r ";
+    private CustomConfig disabledRecipesConfig;
 
     public static CustomRecipes getInstance() {
         return instance;
@@ -44,6 +49,18 @@ public final class CustomRecipes extends JavaPlugin {
         saveResource("config.yml", true);
         PREFIX = getLang("prefix");
 
+        //Load disabledRecipes
+        disabledRecipesConfig = new CustomConfig(this, "disabledRecipes.yml");
+        if (disabledRecipesConfig.getConfig().contains("disabledRecipes")) {
+            List<String> disabled = disabledRecipesConfig.getConfig().getStringList("disabledRecipes");
+            for (String s : disabled) {
+                NamespacedKey namespacedKey = NamespacedKey.fromString(s);
+                CustomRecipesAPI.getInstance().toggleDisabled(namespacedKey);
+                System.out.println(namespacedKey);
+            }
+        }
+
+
         //Commands
         getCommand("listrecipes").setExecutor(new ListRecipesCommand());
         getCommand("listrecipes").setTabCompleter(new ListRecipesCommand());
@@ -72,6 +89,8 @@ public final class CustomRecipes extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        String[] values = CustomRecipesAPI.getInstance().getDisabledRecipes().stream().map(NamespacedKey::asString).collect(Collectors.toList()).toArray(new String[]{});
+        disabledRecipesConfig.getConfig().set("disabledRecipes", values);
+        disabledRecipesConfig.saveConfig();
     }
 }
