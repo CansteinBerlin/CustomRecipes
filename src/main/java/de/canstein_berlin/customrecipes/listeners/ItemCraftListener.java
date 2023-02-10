@@ -10,7 +10,8 @@ public class ItemCraftListener implements Listener {
     @EventHandler
     public void onItemCraft(CraftItemEvent event) {
         if (!CustomRecipesAPI.getInstance().canCraftRecipe(event.getRecipe(), event)) event.setCancelled(true);
+        if (CustomRecipesAPI.getInstance().isDisabled(event.getRecipe())) event.setCancelled(true);
     }
-    
+
 
 }
