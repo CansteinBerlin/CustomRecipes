@@ -24,12 +24,14 @@ public class CustomRecipesAPI {
 
     private final HashMap<NamespacedKey, CustomRecipe> recipesWithRequirements;
     private final HashMap<String, ArrayList<CustomRecipe>> definedRecipes;
+    private final ArrayList<NamespacedKey> disabledRecipes;
 
     private CustomRecipesAPI() {
         instance = this;
 
         recipesWithRequirements = new HashMap<>();
         definedRecipes = new HashMap<>();
+        disabledRecipes = new ArrayList<>();
 
         //Register serializer
         registerSerializer(new CraftingShapedRecipeSerializer());
@@ -186,6 +188,30 @@ public class CustomRecipesAPI {
         return true;
     }
 
+    public void toggleDisabled(CustomRecipe recipe) {
+        if (isDisabled(recipe)) {
+            disabledRecipes.remove(recipe.getNamespacedKey());
+        } else {
+            disabledRecipes.add(recipe.getNamespacedKey());
+        }
+    }
+
+    public void toggleDisabled(NamespacedKey recipe) {
+        if (disabledRecipes.contains(recipe)) {
+            disabledRecipes.remove(recipe);
+        } else {
+            disabledRecipes.add(recipe);
+        }
+    }
+
+    public boolean isDisabled(CustomRecipe recipe) {
+        return disabledRecipes.contains(recipe.getNamespacedKey());
+    }
+
+    public boolean isDisabled(Recipe recipe) {
+        return disabledRecipes.contains(getNamespacedKeyFromRecipe(recipe));
+    }
+
     /**
      * Returns all recipes defined in a specific namespace, input "" to get all defined recipes except the minecraft recipes
      *
@@ -206,5 +232,9 @@ public class CustomRecipesAPI {
 
     public Set<String> getRegisteredNamespaces() {
         return definedRecipes.keySet();
+    }
+
+    public ArrayList<NamespacedKey> getDisabledRecipes() {
+        return disabledRecipes;
     }
 }
