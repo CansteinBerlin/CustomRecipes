@@ -46,6 +46,7 @@ public final class CustomRecipes extends JavaPlugin {
 
         //Commands
         getCommand("listrecipes").setExecutor(new ListRecipesCommand());
+        getCommand("listrecipes").setTabCompleter(new ListRecipesCommand());
 
         //Load recipes from recipes folder
         new File(getDataFolder(), "/out/").mkdir();
@@ -55,7 +56,6 @@ public final class CustomRecipes extends JavaPlugin {
             recipe.writeToFile(new File(getDataFolder(), "/out/"));
             CustomRecipesAPI.getInstance().unregisterRecipe(recipe);
         }
-
     }
 
     private ArrayList<String> getRecipesFromFolder(String dirName) {
