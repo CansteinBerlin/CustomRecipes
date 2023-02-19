@@ -61,7 +61,6 @@ public final class CustomRecipes extends JavaPlugin {
 
         //Commands
         getCommand("listrecipes").setExecutor(new ListRecipesCommand());
-        getCommand("listrecipes").setTabCompleter(new ListRecipesCommand());
 
         //Load recipes from recipes folder
         for (String file : getRecipesFromFolder("recipes")) {

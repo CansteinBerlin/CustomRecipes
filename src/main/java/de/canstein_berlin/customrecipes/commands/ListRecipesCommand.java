@@ -7,9 +7,8 @@ import de.canstein_berlin.customrecipes.gui.ListAllRecipesGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 /*
     Permission: customrecipes.commands.listallrecipesgui
  */
-public class ListRecipesCommand implements CommandExecutor, TabCompleter {
+public class ListRecipesCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
