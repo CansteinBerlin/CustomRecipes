@@ -24,14 +24,14 @@ public class CustomRecipesAPI {
 
     private final HashMap<NamespacedKey, CustomRecipe> recipesWithRequirements;
     private final HashMap<String, ArrayList<CustomRecipe>> definedRecipes;
-    private final ArrayList<NamespacedKey> disabledRecipes;
+    private final HashMap<NamespacedKey, Recipe> disabledRecipes;
 
     private CustomRecipesAPI() {
         instance = this;
 
         recipesWithRequirements = new HashMap<>();
         definedRecipes = new HashMap<>();
-        disabledRecipes = new ArrayList<>();
+        disabledRecipes = new HashMap<>();
 
         //Register serializer
         registerSerializer(new CraftingShapedRecipeSerializer());
@@ -140,6 +140,7 @@ public class CustomRecipesAPI {
      * @param recipe Recipe to unregister
      */
     public void unregisterRecipe(CustomRecipe recipe) {
+        if (recipe.getNamespacedKey() == null) return;
         Bukkit.removeRecipe(recipe.getNamespacedKey());
         recipesWithRequirements.remove(recipe.getNamespacedKey());
     }
@@ -150,6 +151,7 @@ public class CustomRecipesAPI {
      * @param recipe Recipe to unregister
      */
     public void unregisterRecipe(Recipe recipe) {
+        if (getNamespacedKeyFromRecipe(recipe) == null) return;
         Bukkit.removeRecipe(getNamespacedKeyFromRecipe(recipe));
     }
 
@@ -189,33 +191,35 @@ public class CustomRecipesAPI {
     }
 
     public void toggleDisabled(CustomRecipe recipe) {
-        if (isDisabled(recipe)) {
-            disabledRecipes.remove(recipe.getNamespacedKey());
-        } else {
-            disabledRecipes.add(recipe.getNamespacedKey());
-        }
+        toggleDisabled(recipe.getNamespacedKey());
     }
 
-    public void toggleDisabled(NamespacedKey recipe) {
-        if (disabledRecipes.contains(recipe)) {
-            disabledRecipes.remove(recipe);
+    public void toggleDisabled(NamespacedKey recipeKey) {
+        if (disabledRecipes.containsKey(recipeKey)) {
+            Recipe toEnable = disabledRecipes.get(recipeKey);
+            registerRecipe(toEnable);
+
+            disabledRecipes.remove(recipeKey);
+
+
         } else {
-            disabledRecipes.add(recipe);
+            disabledRecipes.put(recipeKey, Bukkit.getRecipe(recipeKey));
+            unregisterRecipe(Bukkit.getRecipe(recipeKey));
         }
     }
 
     public boolean isDisabled(CustomRecipe recipe) {
-        return disabledRecipes.contains(recipe.getNamespacedKey());
+        return disabledRecipes.containsKey(recipe.getNamespacedKey());
     }
 
     public boolean isDisabled(Recipe recipe) {
-        return disabledRecipes.contains(getNamespacedKeyFromRecipe(recipe));
+        return disabledRecipes.containsKey(getNamespacedKeyFromRecipe(recipe));
     }
 
     /**
      * Returns all recipes defined in a specific namespace, input "" to get all defined recipes except the minecraft recipes
      *
-     * @param key Valid namespace of ""
+     * @param key Valid namespace or ""
      * @return recipes defined under the namespace or all
      */
     public ArrayList<CustomRecipe> getDefinedRecipes(String key) {
@@ -234,7 +238,7 @@ public class CustomRecipesAPI {
         return definedRecipes.keySet();
     }
 
-    public ArrayList<NamespacedKey> getDisabledRecipes() {
+    public HashMap<NamespacedKey, Recipe> getDisabledRecipes() {
         return disabledRecipes;
     }
 }

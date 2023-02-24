@@ -48,6 +48,11 @@ public final class CustomRecipes extends JavaPlugin {
         saveResource("config.yml", true);
         PREFIX = getLang("prefix");
 
+        //Load recipes from recipes folder
+        for (String file : getRecipesFromFolder("recipes")) {
+            CustomRecipesAPI.getInstance().createAndRegister(this, file);
+        }
+
         //Load disabledRecipes
         disabledRecipesConfig = new CustomConfig(this, "disabledRecipes.yml");
         if (disabledRecipesConfig.getConfig().contains("disabledRecipes")) {
@@ -62,10 +67,7 @@ public final class CustomRecipes extends JavaPlugin {
         //Commands
         getCommand("listrecipes").setExecutor(new ListRecipesCommand());
 
-        //Load recipes from recipes folder
-        for (String file : getRecipesFromFolder("recipes")) {
-            CustomRecipesAPI.getInstance().createAndRegister(this, file);
-        }
+
     }
 
     private ArrayList<String> getRecipesFromFolder(String dirName) {
@@ -82,7 +84,7 @@ public final class CustomRecipes extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        String[] values = CustomRecipesAPI.getInstance().getDisabledRecipes().stream().map(NamespacedKey::asString).collect(Collectors.toList()).toArray(new String[]{});
+        String[] values = CustomRecipesAPI.getInstance().getDisabledRecipes().keySet().stream().map(NamespacedKey::asString).collect(Collectors.toList()).toArray(new String[]{});
         disabledRecipesConfig.getConfig().set("disabledRecipes", values);
         disabledRecipesConfig.saveConfig();
     }
