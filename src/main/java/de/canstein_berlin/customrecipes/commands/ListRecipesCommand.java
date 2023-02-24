@@ -80,6 +80,7 @@ public class ListRecipesCommand implements TabExecutor {
             Recipe recipe = recipeIterator.next();
             NamespacedKey key = CustomRecipesAPI.getNamespacedKeyFromRecipe(recipe);
             if (key == null) continue;
+            if (!key.getNamespace().equalsIgnoreCase("minecraft")) continue;
             recipes.add(new CustomRecipe(key, recipe));
         }
         return recipes;

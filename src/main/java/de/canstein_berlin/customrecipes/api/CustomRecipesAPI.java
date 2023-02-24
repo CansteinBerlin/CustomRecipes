@@ -200,8 +200,6 @@ public class CustomRecipesAPI {
             registerRecipe(toEnable);
 
             disabledRecipes.remove(recipeKey);
-
-
         } else {
             disabledRecipes.put(recipeKey, Bukkit.getRecipe(recipeKey));
             unregisterRecipe(Bukkit.getRecipe(recipeKey));
