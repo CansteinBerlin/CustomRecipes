@@ -5,17 +5,14 @@ import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileExcept
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
 import de.canstein_berlin.customrecipes.api.recipes.serializer.BaseRecipeSerializer;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.SmithingRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONObject;
 
 public class SmithingRecipeSerializer extends BaseRecipeSerializer {
 
     public SmithingRecipeSerializer() {
-        super("minecraft:smithing", SmithingRecipe.class);
+        super("minecraft:smithing_transform", SmithingTransformRecipe.class);
     }
 
     @Override
@@ -35,11 +32,16 @@ public class SmithingRecipeSerializer extends BaseRecipeSerializer {
         if (!jsonObject.has("addition")) throw new MalformedRecipeFileException("Missing element \"addition\"");
         RecipeChoice addition = getRecipeChoice(jsonObject.get("addition"));
 
+        //Template Item
+        if (!jsonObject.has("template")) throw new MalformedRecipeFileException("Missing element \"template\"");
+        RecipeChoice template = getRecipeChoice(jsonObject.get("template"));
+
+
         //Copy Nbt
         boolean copyNBT = true;
         if (jsonObject.has("copyNbt")) copyNBT = jsonObject.getBoolean("copyNbt");
 
-        SmithingRecipe recipe = new SmithingRecipe(namespacedKey, result, base, addition, copyNBT);
+        SmithingRecipe recipe = new SmithingTransformRecipe(namespacedKey, result, template, base, addition, copyNBT);
 
         return new CustomRecipe(namespacedKey, recipe);
     }

@@ -1,5 +1,6 @@
 package de.canstein_berlin.customrecipes.api.recipes.serializer;
 
+import de.canstein_berlin.customrecipes.CustomRecipes;
 import de.canstein_berlin.customrecipes.api.exceptions.InvalidRecipeValueException;
 import de.canstein_berlin.customrecipes.api.exceptions.MalformedRecipeFileException;
 import de.canstein_berlin.customrecipes.api.recipes.CustomRecipe;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class RecipeSerializerFactory {
 
@@ -62,7 +64,10 @@ public class RecipeSerializerFactory {
             }
         }
 
-        if (recipe == null) throw new InvalidRecipeValueException("Unknown Recipe type " + type);
+        if (recipe == null) {
+            CustomRecipes.getInstance().getLogger().log(Level.WARNING, "Unknown Recipe type " + type);
+            return null;
+        }
 
         if (jsonObject.has("requirements")) {
             JSONArray jsonArray = jsonObject.optJSONArray("requirements");

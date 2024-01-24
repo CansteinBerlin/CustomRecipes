@@ -60,14 +60,11 @@ public final class CustomRecipes extends JavaPlugin {
             for (String s : disabled) {
                 NamespacedKey namespacedKey = NamespacedKey.fromString(s);
                 CustomRecipesAPI.getInstance().toggleDisabled(namespacedKey);
-                System.out.println(namespacedKey);
             }
         }
 
         //Commands
         getCommand("listrecipes").setExecutor(new ListRecipesCommand());
-
-
     }
 
     private ArrayList<String> getRecipesFromFolder(String dirName) {

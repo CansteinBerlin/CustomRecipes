@@ -43,7 +43,14 @@ public class BlastingRecipeGUI extends BlastFurnaceGui {
 
             @Override
             public void run() {
-                setOnClose(e -> parent.show(viewer));
+                setOnClose(e ->
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                parent.show(viewer);
+                            }
+                        }.runTaskLater(CustomRecipes.getInstance(), 1));
+
                 setOnGlobalClick(e -> {
                     e.setCancelled(true);
                     ((Player) entity).updateInventory();

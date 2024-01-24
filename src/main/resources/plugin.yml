@@ -1,7 +1,7 @@
 name: CustomRecipes
 version: '${project.version}'
 main: de.canstein_berlin.customrecipes.CustomRecipes
-api-version: 1.19
+api-version: 1.20
 authors: [ Hasenzahn1 ]
 
 commands:
